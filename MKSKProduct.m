@@ -57,12 +57,24 @@ static NSMutableData *sDataFromConnection;
         if (uuid)
             uniqueID = (NSString *)uuid;
         else {
-            CFStringRef cfUuid = CFUUIDCreateString(NULL, CFUUIDCreate(NULL));
-            uniqueID = (__bridge NSString *)cfUuid;
-            CFRelease(cfUuid);
-            [defaults setObject:uniqueID forKey:@"uniqueID"];
+          CFUUIDRef   uuid;
+          CFStringRef uuidStr;
+          
+          uuid = CFUUIDCreate(NULL);
+          assert(uuid != NULL);
+          
+          uuidStr = CFUUIDCreateString(NULL, uuid);
+          assert(uuidStr != NULL);
+          
+          uniqueID = (__bridge NSString  *)uuidStr;
+          
+          CFRelease(uuidStr);
+          CFRelease(uuid);
+
+          [defaults setObject:uniqueID forKey:@"uniqueID"];
         }
     }
+  return [uniqueID copy];
 #elif TARGET_OS_MAC 
     
     kern_return_t			 kernResult;
